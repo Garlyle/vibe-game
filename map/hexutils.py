@@ -1,3 +1,5 @@
+import math
+
 # map/hexutils.py
 def axial_to_cube(q, r):
     x = q
@@ -16,6 +18,16 @@ HEX_DIRECTIONS = [
 def neighbors(coord):
     q, r = coord
     return [(q + dq, r + dr) for dq, dr in HEX_DIRECTIONS]
+
+def hex_vertices(center, size):
+    cx, cy = center
+    points = []
+    for i in range(6):
+        angle = math.pi / 3 * i  # 60° increments
+        x = cx + size * math.cos(angle)
+        y = cy + size * math.sin(angle)
+        points.append((x, y))
+    return points
 
 def hex_distance(a, b):
     ax, ay, az = axial_to_cube(*a)

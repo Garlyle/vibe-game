@@ -3,8 +3,11 @@ import pygame
 
 from map.hexgrid import FlatTopHexGrid
 from map.tilemap import TileMap
+from map.pathfinding import a_star
 from data.dummy_import import DummyImporter
 from render.pygame_render import PyGameRenderer
+
+TILE_SIZE = 32
 
 # pygame setup
 pygame.init()
@@ -12,13 +15,20 @@ screen = pygame.display.set_mode((800, 600))
 clock = pygame.time.Clock()
 running = True
 
-grid = FlatTopHexGrid(size=32)
+screen_w, screen_h = screen.get_size()
+
+grid = FlatTopHexGrid(
+    size=TILE_SIZE,
+    origin=(screen_w // 2, screen_h // 2)
+)
 tilemap = TileMap(grid)
 
 importer = DummyImporter()
 tilemap.tiles = importer.load()
 
-renderer = PyGameRenderer(screen)
+renderer = PyGameRenderer(screen, TILE_SIZE)
+path = a_star(tilemap, start=(0,0), goal=(2,3))
+
 
 while running:
     # poll for events
@@ -33,7 +43,11 @@ while running:
     # RENDER YOUR GAME HERE
     for coord, tile in tilemap.tiles.items():
         pos = grid.to_world(coord)
-        renderer.draw_tile(tile, pos)
+        renderer.draw_tile(pos, tile)
+
+    # draw search path (if exists)
+    if path:
+        renderer.draw_path(grid, path)
 
     # flip() the display to put your work on screen
     pygame.display.flip()

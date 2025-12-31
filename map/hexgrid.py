@@ -4,8 +4,9 @@ from map.hexutils import neighbors as hex_neighbors
 import math
 
 class FlatTopHexGrid(Grid):
-    def __init__(self, size):
+    def __init__(self, size, origin=(0, 0)):
         self.size = size
+        self.origin = origin
 
     def neighbors(self, coord):
         return hex_neighbors(coord)
@@ -14,4 +15,5 @@ class FlatTopHexGrid(Grid):
         q, r = coord
         x = self.size * (3/2 * q)
         y = self.size * (math.sqrt(3) * (r + q/2))
-        return (x, y)
+        ox, oy = self.origin
+        return (x + ox, y + oy)
