@@ -6,3 +6,4 @@ class Tile:
     terrain: str
     elevation: int
     passable: bool
+    cost: int = 1

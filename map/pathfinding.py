@@ -19,7 +19,7 @@ def a_star(tilemap, start, goal):
             if tile is None or not tile.passable:
                 continue
 
-            tentative_g = g_score[current] + 1
+            tentative_g = g_score[current] + tile.cost
 
             if tentative_g < g_score.get(nxt, float("inf")):
                 came_from[nxt] = current
