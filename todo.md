@@ -1,6 +1,6 @@
 ## High Priority
-- [ ] Add hex grid utilities (distance, neighbors, pathfinding)
-- [ ] Pathfinding on hex grids
+- [ ] Visualize pathfinding in the renderer
+- [ ] Terrain cost support
 
 ## Medium Priority
 - [ ] Refine the renderer abstraction + screen setup

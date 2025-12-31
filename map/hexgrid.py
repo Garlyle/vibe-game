@@ -1,5 +1,6 @@
 # map/hexgrid.py
 from map.grid import Grid
+from map.hexutils import neighbors as hex_neighbors
 import math
 
 class FlatTopHexGrid(Grid):
@@ -7,9 +8,7 @@ class FlatTopHexGrid(Grid):
         self.size = size
 
     def neighbors(self, coord):
-        q, r = coord
-        directions = [(1,0), (1,-1), (0,-1), (-1,0), (-1,1), (0,1)]
-        return [(q+dq, r+dr) for dq, dr in directions]
+        return hex_neighbors(coord)
 
     def to_world(self, coord):
         q, r = coord
