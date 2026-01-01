@@ -7,17 +7,13 @@ import math
 class FlatTopHexGrid(Grid):
     def __init__(self, size, origin=(0, 0)):
         self.size = size
-        self.origin = origin
 
     def neighbors(self, coord):
         return hex_neighbors(coord)
 
     def to_world(self, coord):
-        x, y = axial_to_pixel(*coord, self.size)
-        ox, oy = self.origin
-        return x + ox, y + oy
+        return axial_to_pixel(*coord, self.size)
 
     def from_world(self, x, y):
-        ox, oy = self.origin
-        q, r = pixel_to_axial(x - ox, y - oy, self.size)
+        q, r = pixel_to_axial(x, y, self.size)
         return hex_round(q, r)

@@ -6,6 +6,7 @@ from map.tilemap import TileMap
 from map.pathfinding import a_star
 from data.dummy_import import DummyImporter
 from render.pygame_render import PyGameRenderer
+from render.camera import Camera
 
 TILE_SIZE = 32
 start = (0,0)
@@ -28,7 +29,8 @@ tilemap = TileMap(grid)
 importer = DummyImporter()
 tilemap.tiles = importer.load()
 
-renderer = PyGameRenderer(screen, TILE_SIZE)
+camera = Camera(offset=(screen_w // 2, screen_h // 2))
+renderer = PyGameRenderer(grid, tilemap, TILE_SIZE)
 path = a_star(tilemap, start, goal)
 
 
@@ -41,7 +43,8 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 mx, my = event.pos
-                coord = grid.from_world(mx, my)
+                world_pos = camera.screen_to_world((mx, my))
+                coord = grid.from_world(*world_pos)
                 if not start:
                     start = coord
                 else:
@@ -49,35 +52,48 @@ while running:
                     path = a_star(tilemap, start, goal)
             if event.button == 3:
                 start = goal = path = None
+            if event.button == 4:  # Mouse wheel up → zoom in
+                camera.zoom_at(1.1, event.pos)
+            if event.button == 5:  # Mouse wheel down → zoom out
+                camera.zoom_at(0.9, event.pos)
 
     keys = pygame.key.get_pressed()
     pan_speed = 10
-    if keys[pygame.K_LEFT]:
-        grid.origin = (grid.origin[0] + pan_speed, grid.origin[1])
-    if keys[pygame.K_RIGHT]:
-        grid.origin = (grid.origin[0] - pan_speed, grid.origin[1])
-    if keys[pygame.K_UP]:
-        grid.origin = (grid.origin[0], grid.origin[1] + pan_speed)
-    if keys[pygame.K_DOWN]:
-        grid.origin = (grid.origin[0], grid.origin[1] - pan_speed)
+    if keys[pygame.K_a]:
+        camera.offset.x += pan_speed
+    if keys[pygame.K_d]:
+        camera.offset.x -= pan_speed
+    if keys[pygame.K_w]:
+        camera.offset.y += pan_speed
+    if keys[pygame.K_s]:
+        camera.offset.y -= pan_speed
 
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("purple")
 
     # RENDER YOUR GAME HERE
-    for coord, tile in tilemap.tiles.items():
-        pos = grid.to_world(coord)
-        renderer.draw_tile(pos, tile)
+    renderer.render(screen, camera)
 
-    # Draw highlighted start/end tiles
     if start:
-        renderer.draw_tile(grid.to_world(start), tilemap.get_tile(start), highlight="start")
+        renderer.draw_highlight(
+            screen,
+            camera,
+            start,
+            tilemap.get_tile(start),
+            kind="start"
+        )
+
     if goal:
-        renderer.draw_tile(grid.to_world(goal), tilemap.get_tile(goal), highlight="end")
-    
-    # draw search path (if exists)
+        renderer.draw_highlight(
+            screen,
+            camera,
+            goal,
+            tilemap.get_tile(goal),
+            kind="end"
+        )
+
     if path:
-        renderer.draw_path(grid, path)
+        renderer.draw_path(screen, camera, path)
 
     # flip() the display to put your work on screen
     pygame.display.flip()

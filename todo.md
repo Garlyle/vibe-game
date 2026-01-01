@@ -1,4 +1,7 @@
 ## High Priority
+- [ ] Terrain costs visualization
+- [ ] Hover highlights
+- [ ] Elevation in rendering
 - [ ] Refine the renderer abstraction + screen setup
 - [ ] Event systems (tile changed → rerender)
 
